@@ -1,0 +1,4 @@
+3 9
+name VARCHAR(20)
+age INT
+id INT

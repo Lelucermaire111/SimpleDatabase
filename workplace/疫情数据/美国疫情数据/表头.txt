@@ -1,0 +1,5 @@
+4 74
+date VARCHAR(20)
+newConfirmed INT
+newCured INT
+newDead INT
