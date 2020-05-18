@@ -7,6 +7,7 @@
 #include<algorithm>
 #include<vector>
 #include "files_processing.h"
+#include"Cache.h"
 
 class Table {
 public:
@@ -32,8 +33,8 @@ public:
 	//对于CHAR型数据筛选，并将序号保存
 	void Save();
 	//完成表的操作，将表保存
-	bool isStrLegal(int a, int b,std::vector<std::string> para);
-	//判断CHAR型数据字符长度是否超过所给长度
+	bool isStrLegal(int a, int b, std::vector<std::string> para);
+		//判断CHAR型数据字符长度是否超过所给长度
 	void Draw_line(std::vector<int> max, int columns);
 	//查看表时打印边框
 	void Draw_line(int max);
@@ -44,13 +45,16 @@ public:
 	//重载函数，对于指定某列的情况
 	void TableClear();
 	//每次操作后对表进行初始化
+	void ReadCache();
+	//对缓存区数据进行读取
 protected: FilesProcessing m_FileProcess;
 
 private:
-	std::string m_Name = " ";							//表的名字
 	int m_KeyWordNum;									//表中列（关键字）的数量
 	int m_RecordNum;									//表中数据的数量
 	std::vector<std::vector<std::string>> m_Table;		//表的结构
+	TableInfo m_Info;									//表的信息
+	Cache my_cache;										//缓存区
 	std::vector<std::string> m_DataType;				//表中参数的数据类型
 	std::vector<int> m_Pos;								//对于WHERE条件中序号的保存
 	std::vector<int>m_PosList;							//实现索引（本项目暂未实现）

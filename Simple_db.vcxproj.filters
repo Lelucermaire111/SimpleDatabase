@@ -30,6 +30,9 @@
     <ClCompile Include="kernal_processing.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Cache.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SQL_analysis.h">
@@ -42,6 +45,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="kernal_process.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Cache.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

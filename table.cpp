@@ -3,10 +3,19 @@
 Table::Table() {
 	m_KeyWordNum = 0;
 	m_RecordNum = 0;
+	m_Info = TableInfo(m_Table, m_DataType, m_KeyWordNum, m_RecordNum);
 }
 
 Table::~Table() {
 
+}
+
+void Table::ReadCache()
+{
+	m_Table = m_Info.m_table;
+	m_DataType = m_Info.m_datatype;
+	m_KeyWordNum = m_Info.keywordnum;
+	m_RecordNum = m_Info.recordnum;
 }
 
 void Table::CreateTable(std::vector<std::string>& para) {
@@ -27,14 +36,18 @@ int Table::UseTable(std::string name)
 {
 	if (m_FileProcess.ChangePath(name))
 	{
-		if (name == m_Name)
-			return 2;					//返回状态2，代表此处使用的表和上次相同，使用缓存内的即可
-		m_Name = name;
-		m_Table.clear();				//清空表
-		m_DataType.clear();				//清空数据类型
+		my_cache.Refresh();
+		if (my_cache.QueryMyCache(name, m_Info))
+		{
+			ReadCache();
+			std::cout << "读取缓存" << std::endl;
+			return 2;
+		}
 		m_FileProcess.ReadTableHeader(m_KeyWordNum, m_RecordNum, m_Table, m_DataType);
 		m_FileProcess.ReadTableRecord(m_KeyWordNum, m_RecordNum, m_Table, m_PosList);
 		m_FileProcess.ReadTableIndexes();
+		m_Info = TableInfo(m_Table, m_DataType, m_KeyWordNum, m_RecordNum);
+		my_cache.MyCache[name] = m_Info;
 		return 1;
 	}
 	else return 0;
@@ -359,6 +372,8 @@ void Table::TableClear()
 {
 	m_Pos.clear();								//清空满足条件的序号
 	Save();										//保存
+	m_Table.clear();							//清空表
+	m_DataType.clear();							//清空数据类型
 	m_FileProcess.ChangePath();					//更改文件路径
 }
 void Table::Save()

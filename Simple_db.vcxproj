@@ -138,6 +138,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Cache.cpp" />
     <ClCompile Include="files_processing.cpp" />
     <ClCompile Include="kernal_processing.cpp" />
     <ClCompile Include="simple_db.cpp" />
@@ -145,6 +146,7 @@
     <ClCompile Include="table.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Cache.h" />
     <ClInclude Include="files_processing.h" />
     <ClInclude Include="kernal_process.h" />
     <ClInclude Include="SQL_analysis.h" />
