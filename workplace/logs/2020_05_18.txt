@@ -33,3 +33,13 @@ SELECT * FROM 学生信息表;
 SELECT * FROM 学生信息表;
 SELECT * FROM 学生信息表;
 SELECT * FROM 学生信息表;
+USE 学生;
+SELECT * FROM 学生信息表 WHERE 'id' = 7;
+USE 学生;
+SELECT * FROM 学生信息表;
+USE 学生;
+SELECT * FROM 学生信息表 WHERE 'id' = 7;
+SELECT * FROM 学生信息表 WHERE 'id' = 7;
+USE 学生;
+SELECT * FROM 学生信息表 WHERE 'id' = 7;
+

@@ -326,43 +326,75 @@ void Table::Select(std::vector<std::string>&para)
 		}
 		else if (para[0] == "ASSIGNED")
 		{
-			int keyPos = -1;
-			for (int i = 0; i < m_KeyWordNum; i++)
+			if (para[2] == "*")
 			{
-				if (m_Table[i][0] == para[2])
-					keyPos = i;
-			}
-			if (keyPos == -1)
-			{
-				std::cout << "表头中不存在字段： " << para[2] << std::endl;
-				return;
-			}
-			for (int i = 0; i < m_KeyWordNum; i++)
-			{
-				if (m_Table[i][0] == para[3])
+				for (int i = 0; i < m_KeyWordNum; i++)
 				{
-					if (m_DataType[i] == "INT")
-						Int_Op(i, para[5], para[4]);
-					else Str_Op(i, para[5], para[4]);
-					break;
+					if (m_Table[i][0] == para[3])
+					{
+						if (m_DataType[i] == "INT")
+							Int_Op(i, para[5], para[4]);
+						else Str_Op(i, para[5], para[4]);
+						break;
+					}
+					if (i == m_KeyWordNum - 1)
+					{
+						std::cout << "表头中不存在字段： " << para[3] << std::endl;
+						return;
+					}
 				}
-				if (i==m_KeyWordNum-1)
+				std::vector<int>max;
+				for (int i = 0; i < m_KeyWordNum; i++)
 				{
-					std::cout << "表头中不存在字段： " << para[3] << std::endl;
+					int _max = -INT_MAX;
+					for (int j = 0; j <= m_Pos.size(); j++)
+						if (j == 0)_max = _max > int(m_Table[i][j].size()) ? _max : m_Table[i][j].size();
+						else _max = _max > int(m_Table[i][m_Pos[j-1]].size()) ? _max : m_Table[i][m_Pos[j-1]].size();
+					max.push_back(_max);
+				}
+				Draw_Datas(max, m_Table, m_KeyWordNum, m_Pos.size());
+				max.clear();
+				TableClear();
+			}
+			else {
+				int keyPos = -1;
+				for (int i = 0; i < m_KeyWordNum; i++)
+				{
+					if (m_Table[i][0] == para[2])
+						keyPos = i;
+				}
+				if (keyPos == -1)
+				{
+					std::cout << "表头中不存在字段： " << para[2] << std::endl;
 					return;
 				}
+				for (int i = 0; i < m_KeyWordNum; i++)
+				{
+					if (m_Table[i][0] == para[3])
+					{
+						if (m_DataType[i] == "INT")
+							Int_Op(i, para[5], para[4]);
+						else Str_Op(i, para[5], para[4]);
+						break;
+					}
+					if (i == m_KeyWordNum - 1)
+					{
+						std::cout << "表头中不存在字段： " << para[3] << std::endl;
+						return;
+					}
+				}
+				int max = -INT_MAX;
+				std::vector<std::string> ans;
+				ans.push_back(m_Table[keyPos][0]);
+				for (int i = 0; i < m_Pos.size(); i++)
+					ans.push_back(m_Table[keyPos][m_Pos[i]]);
+				for (int i = 0; i < ans.size(); i++)
+					max = max > int(ans[i].size()) ? max : ans[i].size();
+				if (ans.size() <= 1) std::cout << "未找到满足条件的数据！" << std::endl;
+				Draw_Datas(max, ans, ans.size() - 1);
+				ans.clear();								//清空满足条件的数据
+				TableClear();
 			}
-			int max = -INT_MAX;
-			std::vector<std::string> ans;
-			ans.push_back(m_Table[keyPos][0]);
-			for (int i = 0; i < m_Pos.size(); i++)
-				ans.push_back(m_Table[keyPos][m_Pos[i]]);
-			for (int i = 0; i < ans.size(); i++)
-				max = max > int(ans[i].size()) ? max : ans[i].size();
-			if(ans.size() <= 1) std::cout << "未找到满足条件的数据！" << std::endl;
-			Draw_Datas(max, ans, ans.size() - 1);
-			ans.clear();								//清空满足条件的数据
-			TableClear();
 		}
 	}
 	else return;

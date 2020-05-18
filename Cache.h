@@ -30,7 +30,7 @@ typedef struct TableInfo
 
 struct Cache
 {
-	std::map<std::string, TableInfo>MyCache;
-	int QueryMyCache( std::string name, TableInfo& t);
-	void Refresh();
+	std::map<std::string, TableInfo>MyCache;						//表名对表的相关信息的映射结构
+	int QueryMyCache( std::string name, TableInfo& t);				//缓存区的查询
+	void Refresh();													//缓存区的刷新 过期的清除
 };
