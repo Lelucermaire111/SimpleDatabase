@@ -348,11 +348,25 @@ void Table::Select(std::vector<std::string>&para)
 				{
 					int _max = -INT_MAX;
 					for (int j = 0; j <= m_Pos.size(); j++)
+					{
 						if (j == 0)_max = _max > int(m_Table[i][j].size()) ? _max : m_Table[i][j].size();
-						else _max = _max > int(m_Table[i][m_Pos[j-1]].size()) ? _max : m_Table[i][m_Pos[j-1]].size();
+						else _max = _max > int(m_Table[i][m_Pos[j - 1]].size()) ? _max : m_Table[i][m_Pos[j - 1]].size();
+					}
 					max.push_back(_max);
 				}
-				Draw_Datas(max, m_Table, m_KeyWordNum, m_Pos.size());
+				std::vector<std::vector<std::string>> ans;
+				for (int i = 0; i < m_KeyWordNum; i++)
+				{
+					ans.resize(i + 1);
+					for (int j = 0; j <= int(m_Pos.size()); j++)
+					{
+						if (j == 0)ans[i].push_back(m_Table[i][j]);
+						else ans[i].push_back(m_Table[i][m_Pos[j - 1]]);
+					}
+				}
+				if (ans.size() <= 1) std::cout << "未找到满足条件的数据！" << std::endl;
+				Draw_Datas(max, ans, m_KeyWordNum, m_Pos.size());
+				ans.clear();
 				max.clear();
 				TableClear();
 			}

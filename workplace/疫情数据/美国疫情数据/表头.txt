@@ -1,4 +1,4 @@
-4 74
+4 18944
 date VARCHAR(20)
 newConfirmed INT
 newCured INT
