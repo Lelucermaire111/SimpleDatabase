@@ -1,9 +1,0 @@
-Amy 17 5
-Bob 18 7
-Kate 19 11
-Steve 18 7
-Sam 16 9
-Leslie 19 16
-Lee 19 16
-David 19 33
-Lloyd 15 21
