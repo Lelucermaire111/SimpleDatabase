@@ -1,4 +1,0 @@
-Alice 1 19
-Bob 2 18
-Kate 7 22
-Leslie 9 18
