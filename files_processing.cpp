@@ -24,11 +24,6 @@ void FilesProcessing::CreateFolder(std::string dir_name)
 	_mkdir(dir_name.c_str());
 }
 
-void FilesProcessing::DeleteFolder(std::string dir_name)
-{
-	_rmdir(dir_name.c_str());
-}
-
 void FilesProcessing::ShowAllFiles() 
 {
 	char path[_MAX_DIR];

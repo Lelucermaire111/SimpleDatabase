@@ -19,6 +19,8 @@ public:
 	//创建表
 	int  UseTable(std::string name);
 	//选定该表，读取表头、数据，选定成功返回1，否则返回0
+	int SelectTable(std::string name);
+	//用于使用缓存查询某表
 	void Insert(std::vector<std::string>& para);
 	//将数据插入该表
 	void Update(std::vector<std::string>& para);
@@ -43,10 +45,12 @@ public:
 	//查看表时打印数据
 	void Draw_Datas(int max, std::vector<std::string>table, int row);
 	//重载函数，对于指定某列的情况
-	void TableClear();
+	void TableRefresh();
 	//每次操作后对表进行初始化
 	void ReadCache();
 	//对缓存区数据进行读取
+	void WriteCache(TableInfo& t);
+	//对缓存取数据更新
 protected: FilesProcessing m_FileProcess;
 
 private:

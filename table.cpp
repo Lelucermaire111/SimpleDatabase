@@ -10,6 +10,14 @@ Table::~Table() {
 
 }
 
+void Table::WriteCache(TableInfo& t)
+{
+	t.m_table = m_Table;
+	t.m_datatype = m_DataType;
+	t.recordnum = m_RecordNum;
+	t.keywordnum = m_KeyWordNum;
+}
+
 void Table::ReadCache()
 {
 	m_Table = m_Info.m_table;
@@ -29,7 +37,7 @@ void Table::CreateTable(std::vector<std::string>& para) {
 	}
 	m_FileProcess.ShowAllFiles();
 	m_FileProcess.ChangePath(para[0]);
-	TableClear();
+	TableRefresh();
 }
 
 int Table::UseTable(std::string name)
@@ -40,7 +48,27 @@ int Table::UseTable(std::string name)
 		if (my_cache.QueryMyCache(name, m_Info))
 		{
 			ReadCache();
-			std::cout << "读取缓存" << std::endl;
+			//std::cout << "使用缓存" << std::endl;
+			return 2;
+		}
+		m_FileProcess.ReadTableHeader(m_KeyWordNum, m_RecordNum, m_Table, m_DataType);
+		m_FileProcess.ReadTableRecord(m_KeyWordNum, m_RecordNum, m_Table, m_PosList);
+		m_FileProcess.ReadTableIndexes();
+		return 1;
+	}
+	else return 0;
+}
+
+int Table::SelectTable(std::string name)
+{
+	if (m_FileProcess.ChangePath(name))
+	{
+		my_cache.Refresh();
+		if (my_cache.QueryMyCache(name, m_Info))
+		{
+			ReadCache();
+			my_cache.MyCache[name].m_CreateTime = time(NULL);
+			//std::cout << "使用缓存" << std::endl;
 			return 2;
 		}
 		m_FileProcess.ReadTableHeader(m_KeyWordNum, m_RecordNum, m_Table, m_DataType);
@@ -121,7 +149,13 @@ void Table::Insert(std::vector<std::string>& para)
 					m_Table[i].push_back("*");
 		}
 		std::cout << "插入数据成功" << std::endl;
-		TableClear();
+		if (my_cache.QueryMyCache(para[0], m_Info))
+		{
+			WriteCache(my_cache.MyCache[para[0]]);
+			m_Info.recordnum = m_RecordNum;
+			m_Info.m_table = m_Table;
+		}
+		TableRefresh();
 	}
 	else return;
 }
@@ -166,50 +200,45 @@ void Table::Str_Op(int keyPos, std::string key, std::string op)
 
 void Table::Delete(std::vector<std::string>& para)
 {
-	if (para[0] == "DEFAULT")
+	if (UseTable(para[0]))
 	{
-		m_FileProcess.ChangePath(para[1]);
-		m_FileProcess.ChangePath();
-		m_FileProcess.DeleteFolder(para[1]);
-		std::cout << para[0] << "已删除" << std::endl;
-		m_FileProcess.ShowAllFiles();
-
-	}
-	if (para[0] == "ASSIGNED") {
-		if (UseTable(para[1]))
+		for (int i = 0; i < m_KeyWordNum; i++)
 		{
-			for (int i = 0; i < m_KeyWordNum; i++)
+			if (m_Table[i][0] == para[1])
 			{
-				if (m_Table[i][0] == para[2])
-				{
-					if (m_DataType[i] == "INT")
-						Int_Op(i, para[4], para[3]);
-					else
-						Str_Op(i, para[4], para[3]);
-					break;
-				}
-				if (i == m_KeyWordNum)
-				{
-					std::cout << "表头中不存在字段： " << para[2] << std::endl;
-					return;
-				}
+				if (m_DataType[i] == "INT")
+					Int_Op(i, para[3], para[2]);
+				else
+					Str_Op(i, para[3], para[2]);
+				break;
 			}
-			for (int i = 0; i < m_KeyWordNum; i++)
+			if (i == m_KeyWordNum)
 			{
-				for (int j = 0; j < m_Pos.size(); j++)
-				{
-					std::vector<std::string>::iterator it = m_Table[i].begin();
-					it += (m_Pos[j] - j);
-					m_Table[i].erase(it);
-				}
+				std::cout << "表头中不存在字段： " << para[2] << std::endl;
+				return;
 			}
-			if (m_Pos.size() > 0)std::cout << "删除数据成功！" << std::endl;
-			else std::cout << "未找到满足条件的数据！" << std::endl;
-			m_RecordNum -= m_Pos.size();
-			TableClear();
 		}
-		else return;
+		for (int i = 0; i < m_KeyWordNum; i++)
+		{
+			for (int j = 0; j < m_Pos.size(); j++)
+			{
+				std::vector<std::string>::iterator it = m_Table[i].begin();
+				it += (m_Pos[j] - j);
+				m_Table[i].erase(it);
+			}
+		}
+		if (m_Pos.size() > 0)std::cout << "删除数据成功！" << std::endl;
+		else std::cout << "未找到满足条件的数据！" << std::endl;
+		m_RecordNum -= m_Pos.size();
+		if (my_cache.QueryMyCache(para[0], m_Info))
+		{
+			WriteCache(my_cache.MyCache[para[0]]);
+			m_Info.recordnum = m_RecordNum;
+			m_Info.m_table = m_Table;
+		}
+		TableRefresh();
 	}
+	else return;
 }
 
 void Table::Update(std::vector<std::string>& para)
@@ -253,7 +282,13 @@ void Table::Update(std::vector<std::string>& para)
 		}
 		if (m_Pos.size() > 0)std::cout << "更新数据成功！" << std::endl;
 		else std::cout << "未找到满足条件的数据！" << std::endl;
-		TableClear();
+		if (my_cache.QueryMyCache(para[0], m_Info))
+		{
+			WriteCache(my_cache.MyCache[para[0]]);
+			m_Info.recordnum = m_RecordNum;
+			m_Info.m_table = m_Table;
+		}
+		TableRefresh();
 	}
 	else return;
 }
@@ -308,7 +343,7 @@ void Table::Draw_Datas(std::vector<int> max, std::vector<std::vector<std::string
 
 void Table::Select(std::vector<std::string>&para)
 {
-	if (UseTable(para[1]))
+	if (SelectTable(para[1]))
 	{
 		if (para[0] == "DEFAULT")
 		{
@@ -322,7 +357,7 @@ void Table::Select(std::vector<std::string>&para)
 			}
 			Draw_Datas(max, m_Table, m_KeyWordNum, m_RecordNum );
 			max.clear();
-			TableClear();
+			TableRefresh();
 		}
 		else if (para[0] == "ASSIGNED")
 		{
@@ -368,7 +403,7 @@ void Table::Select(std::vector<std::string>&para)
 				Draw_Datas(max, ans, m_KeyWordNum, m_Pos.size());
 				ans.clear();
 				max.clear();
-				TableClear();
+				TableRefresh();
 			}
 			else {
 				int keyPos = -1;
@@ -407,14 +442,14 @@ void Table::Select(std::vector<std::string>&para)
 				if (ans.size() <= 1) std::cout << "未找到满足条件的数据！" << std::endl;
 				Draw_Datas(max, ans, ans.size() - 1);
 				ans.clear();								//清空满足条件的数据
-				TableClear();
+				TableRefresh();
 			}
 		}
 	}
 	else return;
 }
 
-void Table::TableClear()
+void Table::TableRefresh()
 {
 	m_Pos.clear();								//清空满足条件的序号
 	Save();										//保存

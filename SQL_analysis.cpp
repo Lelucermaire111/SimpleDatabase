@@ -22,7 +22,8 @@ void Sql_Analysis::CommandHelp(int n)
 	case 4: std::cout << "格式应为 INSERT INTO <TABLE_NAME> VALUES (<数据1>,<数据2>....);" << std::endl
 		<< "或 INSERT INTO <NAME> (<参数1>,<参数2>...) VALUES (<数据1>,<数据2>...);" << std::endl; break;
 	case 5:	std::cout << "格式应为 SELECT * FROM <TABLE_NAME>;" << std::endl
-		<< "或 SELECT <NAME> FROM <TABLE_NAME> WHERE <NAME> <OP> <VALUE>;" << std::endl; break;
+		<< "或 SELECT <NAME> FROM <TABLE_NAME> WHERE <NAME> <OP> <VALUE>;" 
+		<<"或SELECT * FROM <TABLE_NAME> WHERE <NAME> <OP> <VALUE>"<< std::endl; break;
 	case 6:	std::cout << "格式应为 UPDATE <TABLE_NAME> SET <NAME> = <NEWVALUE> WHERE <NAME> <OP> <VALUE>;" << std::endl; break;
 	case 7:	std::cout << "格式应为 DELETE FROM <TABLE_NAME> WHERE <NAME> <OP> <VALUE>;" << std::endl
 		<<"或 DELETE <NAME>;";break;
@@ -246,20 +247,12 @@ void Sql_Analysis::Delete()
 {
 	std::smatch temp;
 	std::regex pattern1("\\s*DELETE FROM\\s+(\\S+)\\s+WHERE\\s+[\']*([^'\"\\s]+)[\']*\\s+([><!=]+)\\s+[\"]*([^'\"\\s]+)[\"]*\\s*[;]");
-	std::regex pattern2("\\s*DELETE\\s+([^;\\s]+)\\s*[;]\\s*");
 	if (std::regex_match(m_Str, temp, pattern1))
 	{
-		m_Para.push_back("ASSIGNED");
 		m_Para.push_back(temp[1]);
 		m_Para.push_back(temp[2]);
 		m_Para.push_back(temp[3]);
 		m_Para.push_back(temp[4]);
-		m_Correct = true;
-	}
-	else if (std::regex_match(m_Str, temp, pattern2))
-	{
-		m_Para.push_back("DEFAULT");
-		m_Para.push_back(temp[1]);
 		m_Correct = true;
 	}
 	else

@@ -14,8 +14,6 @@ public:
 	//更改当前路径
 	void CreateFolder(std::string dir_name);
 	//创建文件夹
-	void DeleteFolder(std::string dir_name);
-	//删除文件夹
 	void ShowAllFiles();
 	//显示所有文件
 	void WriteTxt(std::string name, std::vector<std::string>& record);
