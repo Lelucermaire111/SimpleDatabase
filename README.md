@@ -1,2 +1,2 @@
 # Simple_db
-A simple database by cmd.
+A simple database implemented by C++.
